@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "atlas-foundry-alan-vo",
+  "owner": "ALANDVO",
+  "email": "alanvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: atlas-foundry-alan-vo",
+  "workflows": [
+    "Deterministic text generation with reproducible seeds for evaluation",
+    "Distributed weight synchronization via NCCL for RL training loops",
+    "Provider-agnostic LLM advisory explanations grounded in actual records"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
