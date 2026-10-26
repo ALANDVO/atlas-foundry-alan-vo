@@ -6,15 +6,13 @@ These models define the contract for the text generation API.
 
 from dataclasses import dataclass
 from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 @dataclass(frozen=True)
 class GenerationRequest:
     """
-    Internal request for text generation.
-
-    Used by the InferenceService for type-safe internal operations.
+    Internal generation request - used by inference service.
     """
     prompt: str
     max_new_tokens: int = 32
@@ -28,9 +26,7 @@ class GenerationRequest:
 @dataclass(frozen=True)
 class GenerationResponse:
     """
-    Internal response from text generation.
-
-    Contains the completion and metadata.
+    Internal generation response - returned by inference service.
     """
     completion: str
     tokens_generated: int
@@ -42,51 +38,16 @@ class GenerationResponse:
 class GenerateRequestModel(BaseModel):
     """
     API request model for POST /v1/generate.
-
-    Validates all input parameters with sensible bounds.
     """
-    prompt: str = Field(
-        ...,
-        min_length=1,
-        max_length=8192,
-        description="Input prompt for generation",
-    )
-    max_new_tokens: int = Field(
-        default=32,
-        ge=1,
-        le=2048,
-        description="Maximum tokens to generate",
-    )
-    temperature: float = Field(
-        default=0.0,
-        ge=0.0,
-        le=2.0,
-        description="Sampling temperature (0 = greedy)",
-    )
-    top_p: float = Field(
-        default=1.0,
-        ge=0.0,
-        le=1.0,
-        description="Nucleus sampling threshold",
-    )
-    top_k: int = Field(
-        default=0,
-        ge=0,
-        le=100,
-        description="Top-k sampling (0 = disabled)",
-    )
-    repetition_penalty: float = Field(
-        default=1.0,
-        ge=0.1,
-        le=2.0,
-        description="Repetition penalty",
-    )
-    seed: Optional[int] = Field(
-        default=None,
-        ge=0,
-        le=2_147_483_647,
-        description="Random seed for reproducibility",
-    )
+    model_config = ConfigDict(protected_namespaces=())
+
+    prompt: str = Field(..., min_length=1, max_length=8192, description="Input prompt for generation")
+    max_new_tokens: int = Field(default=32, ge=1, le=2048, description="Maximum number of new tokens to generate")
+    temperature: float = Field(default=0.0, ge=0.0, le=2.0, description="Sampling temperature")
+    top_p: float = Field(default=1.0, ge=0.0, le=1.0, description="Nucleus sampling parameter")
+    top_k: int = Field(default=0, ge=0, le=100, description="Top-k sampling parameter")
+    repetition_penalty: float = Field(default=1.0, ge=0.0, le=2.0, description="Repetition penalty")
+    seed: Optional[int] = Field(default=None, ge=0, description="Random seed for reproducible generation")
 
     @field_validator("prompt")
     @classmethod
@@ -112,11 +73,13 @@ class GenerateResponseModel(BaseModel):
     """
     API response model for POST /v1/generate.
     """
-    completion: str
-    tokens_generated: int
-    latency_ms: float
-    model_name: str
-    seed_used: Optional[int]
+    model_config = ConfigDict(protected_namespaces=())
+
+    completion: str = Field(..., description="Generated text completion")
+    tokens_generated: int = Field(..., ge=0, description="Number of tokens generated")
+    latency_ms: float = Field(..., ge=0.0, description="Generation latency in milliseconds")
+    model_name: str = Field(..., description="Name of the model used")
+    seed_used: Optional[int] = Field(default=None, description="Seed used for generation")
 
     @classmethod
     def from_internal(cls, response: GenerationResponse) -> "GenerateResponseModel":

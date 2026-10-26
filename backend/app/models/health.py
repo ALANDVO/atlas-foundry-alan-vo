@@ -3,7 +3,7 @@ Health and model info response models.
 """
 
 from dataclasses import dataclass
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 @dataclass(frozen=True)
@@ -21,6 +21,8 @@ class HealthResponseModel(BaseModel):
     """
     API response model for GET /v1/health.
     """
+    model_config = ConfigDict(protected_namespaces=())
+
     status: str
     version: str
     model_loaded: bool
@@ -51,6 +53,8 @@ class ModelInfoResponseModel(BaseModel):
     """
     API response model for GET /v1/model/info.
     """
+    model_config = ConfigDict(protected_namespaces=())
+
     model_name: str
     loaded: bool
     dtype: str

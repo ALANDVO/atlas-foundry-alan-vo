@@ -1,1 +1,86 @@
-{"schema_version":1,"current_feature":"core-inference-api","features":[{"id":"core-inference-api","title":"Core Inference API - Text Generation Endpoint","status":"in_progress","acceptance":["POST /generate accepts prompt and sampling params, returns completion","Health check endpoint /health returns service status","Backend runs with pytest tests passing","Frontend builds and typechecks","Docker compose starts backend and frontend"],"implementation":["backend/app/main.py","backend/app/api/generate.py","backend/app/services/inference.py","backend/requirements.txt","backend/tests/test_generate.py","frontend/package.json","frontend/src/api/client.ts","frontend/src/components/GenerateForm.tsx","frontend/src/App.tsx","docker-compose.yaml","Dockerfile.backend","Dockerfile.frontend"],"tests":["backend/tests/test_generate.py","frontend/src/components/GenerateForm.test.tsx"]},{"id":"weight-transfer-nccl","title":"NCCL Weight Transfer for Distributed Training","status":"planned","acceptance":["POST /init_weight_transfer_engine initializes NCCL process group","POST /start_weight_update begins weight update session","POST /update_weights receives broadcasted weights via NCCL","POST /finish_weight_update closes weight update session","Round-trip test: perturb weights -> generate -> restore weights -> generate matches baseline"],"implementation":[],"tests":[]},{"id":"model-management","title":"Model Loading and Management","status":"planned","acceptance":["Load HuggingFace models with configurable tensor parallelism","Model metadata endpoint","Support for bfloat16/float16 precision"],"implementation":[],"tests":[]},{"id":"auth-oidc","title":"OIDC Authentication with Keycloak","status":"planned","acceptance":["Keycloak integration via docker-compose","Protected API endpoints with role-based access","Login/logout flow in frontend"],"implementation":[],"tests":[]},{"id":"benchmarks-evaluation","title":"Benchmarking and Evaluation Harness","status":"planned","acceptance":["Reproducible benchmark command","Latency/throughput metrics","Comparison baseline storage"],"implementation":[],"tests":[]}]}
+{
+  "schema_version": 1,
+  "current_feature": "core-inference-api",
+  "features": [
+    {
+      "id": "core-inference-api",
+      "title": "Core Inference API - Text Generation Endpoint",
+      "status": "done",
+      "acceptance": [
+        "POST /generate accepts prompt and sampling params, returns completion",
+        "Health check endpoint /health returns service status",
+        "Backend runs with pytest tests passing",
+        "Frontend builds and typechecks",
+        "Docker compose starts backend and frontend"
+      ],
+      "implementation": [
+        "backend/app/main.py",
+        "backend/app/api/generate.py",
+        "backend/app/services/inference.py",
+        "backend/requirements.txt",
+        "backend/tests/test_generate.py",
+        "frontend/package.json",
+        "frontend/src/api/client.ts",
+        "frontend/src/components/GenerateForm.tsx",
+        "frontend/src/App.tsx",
+        "docker-compose.yaml",
+        "Dockerfile.backend",
+        "Dockerfile.frontend"
+      ],
+      "tests": [
+        "backend/tests/test_generate.py",
+        "frontend/src/components/GenerateForm.test.tsx"
+      ]
+    },
+    {
+      "id": "weight-transfer-nccl",
+      "title": "NCCL Weight Transfer for Distributed Training",
+      "status": "planned",
+      "acceptance": [
+        "POST /init_weight_transfer_engine initializes NCCL process group",
+        "POST /start_weight_update begins weight update session",
+        "POST /update_weights receives broadcasted weights via NCCL",
+        "POST /finish_weight_update closes weight update session",
+        "Round-trip test: perturb weights -> generate -> restore weights -> generate matches baseline"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "model-management",
+      "title": "Model Loading and Management",
+      "status": "planned",
+      "acceptance": [
+        "Load HuggingFace models with configurable tensor parallelism",
+        "Model metadata endpoint",
+        "Support for bfloat16/float16 precision"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "auth-oidc",
+      "title": "OIDC Authentication with Keycloak",
+      "status": "planned",
+      "acceptance": [
+        "Keycloak integration via docker-compose",
+        "Protected API endpoints with role-based access",
+        "Login/logout flow in frontend"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "benchmarks-evaluation",
+      "title": "Benchmarking and Evaluation Harness",
+      "status": "planned",
+      "acceptance": [
+        "Reproducible benchmark command",
+        "Latency/throughput metrics",
+        "Comparison baseline storage"
+      ],
+      "implementation": [],
+      "tests": []
+    }
+  ]
+}

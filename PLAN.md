@@ -10,7 +10,7 @@ core-inference-api
 
 ### core-inference-api — Core Inference API - Text Generation Endpoint
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - POST /generate accepts prompt and sampling params, returns completion
