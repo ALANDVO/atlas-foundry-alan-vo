@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -49,7 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Provider configuration table
 - Security limitations
 - AI/ML evaluation section with baseline metrics
-
+### Fixed (this checkpoint)
+- Pydantic v2 protected_namespaces warnings suppressed in API models (GenerateResponseModel, HealthResponseModel, ModelInfoResponseModel, Settings)
+- Verified all 35 backend tests pass with 91% coverage
+- Verified all 5 frontend tests pass; TypeScript typecheck passes
 ### Known Limitations (v1.0.0)
 - Mock inference engine only — no real model loading
 - NCCL weight transfer not implemented (planned for next phase)
