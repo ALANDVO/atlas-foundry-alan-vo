@@ -3,7 +3,7 @@ Generation API endpoints.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.services.inference import (
     GenerationRequest,
@@ -34,6 +34,8 @@ class GenerateRequestModel(BaseModel):
 
 
 class GenerateResponseModel(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     completion: str
     tokens_generated: int
     latency_ms: float
@@ -42,6 +44,8 @@ class GenerateResponseModel(BaseModel):
 
 
 class HealthResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     status: str
     version: str
     model_loaded: bool
