@@ -377,3 +377,7 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 - React + TypeScript frontend with Vitest tests
 - Docker Compose for local development
 - Typed API client derived from backend routes
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

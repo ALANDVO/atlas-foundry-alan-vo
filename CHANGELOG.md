@@ -102,3 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Latency/throughput percentiles
 - Baseline comparison and regression detection
 - Integration with real model backends (vLLM, TensorRT-LLM)
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

@@ -61,3 +61,6 @@ Acceptance:
 - Latency/throughput metrics
 - Comparison baseline storage
 
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)
