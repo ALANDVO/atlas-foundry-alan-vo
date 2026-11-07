@@ -148,7 +148,8 @@ class TestHealthEndpoint:
     def test_health_check_version_matches(self, client: TestClient):
         """Health check version matches app version."""
         response = client.get("/v1/health")
-        assert response.json()["version"] == "1.0.0"
+        from app.core.config import settings
+        assert response.json()["version"] == settings.app_version
 
 
 class TestModelInfoEndpoint:
@@ -174,6 +175,7 @@ class TestRootEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == "atlas-foundry"
-        assert data["version"] == "1.0.0"
+        from app.core.config import settings
+        assert data["version"] == settings.app_version
         assert "author" in data
         assert data["author"] == "Alan Vo"

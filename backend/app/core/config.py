@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # Application
     app_name: str = "atlas-foundry"
-    app_version: str = "1.0.0"
+    app_version: str = "1.2.0"
     debug: bool = False
     host: str = "127.0.0.1"
     port: int = 8000
