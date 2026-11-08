@@ -84,6 +84,59 @@ class TestGenerateEndpoint:
 
         assert r1.json()["completion"] == r2.json()["completion"]
 
+    def test_generate_temperature_nonzero_variation(self, client: TestClient):
+        """Temperature > 0 produces varied output across calls."""
+        response1 = client.post("/v1/generate", json={
+            "prompt": "test prompt",
+            "max_new_tokens": 10,
+            "temperature": 1.0,
+            "seed": 42,
+        })
+        response2 = client.post("/v1/generate", json={
+            "prompt": "test prompt",
+            "max_new_tokens": 10,
+            "temperature": 1.0,
+            "seed": 43,
+        })
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        # Different seeds should produce different completions
+        assert response1.json()["completion"] != response2.json()["completion"]
+        # But same seed should be deterministic
+        response3 = client.post("/v1/generate", json={
+            "prompt": "test prompt",
+            "max_new_tokens": 10,
+            "temperature": 1.0,
+            "seed": 42,
+        })
+        assert response1.json()["completion"] == response3.json()["completion"]
+
+
+class TestInferenceServiceUnit:
+    """Unit tests for InferenceService (bypassing API)."""
+
+    def test_generate_raises_when_not_loaded(self):
+        """generate() raises RuntimeError when model not loaded."""
+        from app.services.inference import InferenceService, GenerationRequest
+        service = InferenceService()
+        # Don't call load()
+        request = GenerationRequest(prompt="test", max_new_tokens=10)
+        with pytest.raises(RuntimeError, match="Model not loaded"):
+            service.generate(request)
+
+    def test_generate_works_after_load(self):
+        """generate() works after load() is called."""
+        from app.services.inference import InferenceService, GenerationRequest
+        service = InferenceService()
+        service.load()
+        request = GenerationRequest(prompt="test", max_new_tokens=10)
+        response = service.generate(request)
+        assert response.completion
+        assert response.tokens_generated > 0
+        assert response.latency_ms >= 0
+        assert response.model_name == "Qwen/Qwen3-0.6B"
+        assert response.seed_used is not None
+
     def test_generate_validation_empty_prompt_rejected(self, client: TestClient):
         """Empty prompt returns 422 validation error."""
         response = client.post("/v1/generate", json={"prompt": ""})

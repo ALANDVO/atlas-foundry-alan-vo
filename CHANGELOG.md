@@ -1,8 +1,19 @@
 # Changelog
 
+## 1.4.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Fixed (this checkpoint)
+- Added unit tests for InferenceService: model not loaded error, temperature > 0 sampling, load/unload lifecycle
+- Test coverage for inference service improved from 94% to 97%
+- All 20 backend generate tests pass
+- All 18 weight transfer tests pass
+- Frontend builds and typechecks; 5 Vitest tests pass
 
 ## 1.2.0 — work-in-progress checkpoint
 
