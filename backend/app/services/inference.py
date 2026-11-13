@@ -87,7 +87,7 @@ class InferenceService:
             seed_used=seed,
         )
 
-    def _mock_generate(self, prompt: str, max_tokens: int, seed: int, temperature: float) -> str:
+    def _mock_generate(self, prompt: str, max_tokens: int, seed: int, temperature: float, top_k: int = 0) -> str:
         """
         Deterministic mock generation.
 
@@ -112,7 +112,18 @@ class InferenceService:
         # Temperature effect: higher = more variation in selection
         if temperature == 0.0:
             # Greedy: just take first N words
-            selected = shuffled[:max_tokens]
+            # Temperature effect: higher = more variation in selection
+            if temperature == 0.0:
+                # Greedy: just take first N words
+                # Apply top_k: use min(top_k, max_tokens) candidates
+                candidate_pool_size = min(top_k, max_tokens) if top_k > 0 else max_tokens
+                selected = shuffled[:candidate_pool_size]
+            else:
+                # Sample with temperature-like variation
+                # Apply top_k: select from smaller pool
+                candidate_pool_size = min(top_k, len(shuffled)) if top_k > 0 else len(shuffled)
+                selected = [rng.choice(shuffled[:candidate_pool_size]) for _ in range(max_tokens)]
+
         else:
             # Sample with temperature-like variation
             selected = [rng.choice(shuffled) for _ in range(max_tokens)]
