@@ -28,6 +28,30 @@ class WeightTransferConfig:
     device_indices: Optional[List[int]] = None
 
 
+def _config_mismatch(active: WeightTransferConfig, requested: WeightTransferConfig) -> Optional[str]:
+    """
+    Return a description of the first field that differs, or None if equal.
+
+    `device_indices` is compared as a list so that `[0, 1]` and `(0, 1)` are
+    treated as the same device assignment.
+    """
+    if active.master_address != requested.master_address:
+        return f"master_address '{active.master_address}' != '{requested.master_address}'"
+    if active.master_port != requested.master_port:
+        return f"master_port {active.master_port} != {requested.master_port}"
+    if active.rank_offset != requested.rank_offset:
+        return f"rank_offset {active.rank_offset} != {requested.rank_offset}"
+    if active.world_size != requested.world_size:
+        return f"world_size {active.world_size} != {requested.world_size}"
+    if active.group_name != requested.group_name:
+        return f"group_name '{active.group_name}' != '{requested.group_name}'"
+    if active.backend != requested.backend:
+        return f"backend '{active.backend}' != '{requested.backend}'"
+    if list(active.device_indices or []) != list(requested.device_indices or []):
+        return f"device_indices {active.device_indices} != {requested.device_indices}"
+    return None
+
+
 @dataclass(frozen=True)
 class WeightUpdatePlan:
     """Plan for a weight update operation."""
@@ -99,11 +123,18 @@ class WeightTransferService:
         """
         with self._lock:
             if self._initialized:
-                # Allow re-initialization with same config, reject different config
-                if self._config and self._config.group_name != config.group_name:
+                # A live process group is bound to the rank/world/backend it was
+                # created with. Re-initializing is only a no-op when every field
+                # matches; otherwise report success would describe a group that
+                # does not exist.
+                if self._config is None:
+                    raise RuntimeError("Weight transfer initialized without a config")
+
+                mismatch = _config_mismatch(self._config, config)
+                if mismatch:
                     raise ValueError(
-                        f"Already initialized with group '{self._config.group_name}', "
-                        f"cannot reinitialize with '{config.group_name}'"
+                        f"Already initialized with {mismatch}; "
+                        f"cannot reinitialize with a different config"
                     )
                 logger.warning("Weight transfer already initialized with same config")
                 return True
