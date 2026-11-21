@@ -452,3 +452,61 @@ class TestWeightTransferLifecycle:
         assert response.status_code == 200
 
         client.post("/v1/finish_weight_update", json={"group_name": "multi_update"})
+
+class TestWeightTransferReinitialize:
+    """Re-initialization must not silently discard a conflicting config.
+
+    `initialize()` installs `WeightTransferConfig` once; a later call with the
+    same group but different rank/world/backend is not the config in effect.
+    """
+
+    INIT_GROUP = "reinit_group"
+
+    def _init(self, client: TestClient, **overrides):
+        payload = {
+            "master_address": "127.0.0.1",
+            "master_port": 29511,
+            "rank_offset": 1,
+            "world_size": 2,
+            "group_name": self.INIT_GROUP,
+        }
+        payload.update(overrides)
+        return client.post("/v1/init_weight_transfer_engine", json=payload)
+
+    def test_conflicting_reinit_rejected(self, client: TestClient, weight_transfer_service):
+        """Same group with a different world_size/rank is rejected, not accepted."""
+        assert self._init(client).status_code == 200
+
+        response = self._init(client, rank_offset=2, world_size=4)
+
+        assert response.status_code == 400
+        detail = response.json()["detail"]
+        assert "world_size" in detail or "rank_offset" in detail
+
+    def test_conflicting_reinit_keeps_active_config(self, client: TestClient, weight_transfer_service):
+        """The rejected request leaves the original rank/world in effect."""
+        assert self._init(client, rank_offset=1, world_size=2).status_code == 200
+
+        self._init(client, rank_offset=3, world_size=8)
+
+        config = weight_transfer_service.config
+        assert config is not None
+        assert config.rank_offset == 1
+        assert config.world_size == 2
+
+    def test_conflicting_backend_reinit_rejected(self, client: TestClient, weight_transfer_service):
+        """Same group with a different backend is rejected, not accepted."""
+        assert self._init(client).status_code == 200
+
+        response = self._init(client, backend="gloo")
+
+        assert response.status_code == 400
+        assert "backend" in response.json()["detail"]
+
+    def test_identical_reinit_is_idempotent(self, client: TestClient, weight_transfer_service):
+        """Re-initializing with the same config still succeeds."""
+        assert self._init(client).status_code == 200
+        assert self._init(client).status_code == 200
+
+        assert weight_transfer_service.config is not None
+        assert weight_transfer_service.config.world_size == 2
