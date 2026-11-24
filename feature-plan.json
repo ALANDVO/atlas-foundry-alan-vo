@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "core-inference-api",
+  "current_feature": "weight-transfer-nccl",
   "features": [
     {
       "id": "core-inference-api",
@@ -35,7 +35,7 @@
     {
       "id": "weight-transfer-nccl",
       "title": "NCCL Weight Transfer for Distributed Training",
-      "status": "planned",
+      "status": "done",
       "acceptance": [
         "POST /init_weight_transfer_engine initializes NCCL process group",
         "POST /start_weight_update begins weight update session",
@@ -43,8 +43,15 @@
         "POST /finish_weight_update closes weight update session",
         "Round-trip test: perturb weights -> generate -> restore weights -> generate matches baseline"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/api/weight_transfer.py",
+        "backend/app/models/weight_transfer.py",
+        "backend/app/services/weight_transfer.py",
+        "backend/tests/test_weight_transfer.py"
+      ],
+      "tests": [
+        "backend/tests/test_weight_transfer.py"
+      ]
     },
     {
       "id": "model-management",

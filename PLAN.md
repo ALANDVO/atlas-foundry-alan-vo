@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-core-inference-api
+weight-transfer-nccl
 
 ## Roadmap
 
@@ -25,7 +25,7 @@ Tests: `backend/tests/test_generate.py`, `frontend/src/components/GenerateForm.t
 
 ### weight-transfer-nccl — NCCL Weight Transfer for Distributed Training
 
-Status: planned
+Status: done
 
 Acceptance:
 - POST /init_weight_transfer_engine initializes NCCL process group
@@ -33,6 +33,10 @@ Acceptance:
 - POST /update_weights receives broadcasted weights via NCCL
 - POST /finish_weight_update closes weight update session
 - Round-trip test: perturb weights -> generate -> restore weights -> generate matches baseline
+
+Implementation: `backend/app/api/weight_transfer.py`, `backend/app/models/weight_transfer.py`, `backend/app/services/weight_transfer.py`, `backend/tests/test_weight_transfer.py`
+
+Tests: `backend/tests/test_weight_transfer.py`
 
 ### model-management — Model Loading and Management
 
